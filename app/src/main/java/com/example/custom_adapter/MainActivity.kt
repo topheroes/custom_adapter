@@ -9,7 +9,38 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
+
+
+class ProductRAdapter(val context: Context,val products: List<ProductItem>, val clicker:(index:Int)->Unit): RecyclerView.Adapter<ProductRAdapter.ViewHolder>(){
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val productView:View = LayoutInflater.from(context).inflate(R.layout.product_item, null)
+
+        val viewHolder = ViewHolder(context, productView)
+        return viewHolder
+    }
+
+    override fun getItemCount(): Int {
+        return products.count()
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.productText.text = products[position].productText
+        holder.productView.setOnClickListener{clicker(position)}
+        val imageRes = context.resources.getIdentifier(products[position].productImage, "drawable", context.packageName)
+        holder.productImage.setImageResource(imageRes)
+    }
+
+
+    inner class ViewHolder(context: Context,val productView:View):RecyclerView.ViewHolder(productView){
+
+        val productText = productView.findViewById<TextView>(R.id.productText)
+        val productImage = productView.findViewById<ImageView>(R.id.productImage)
+    }
+
+}
 
 
 class ProductAdapter(val context: Context,val products: List<ProductItem>):BaseAdapter(){
@@ -71,7 +102,12 @@ class MainActivity : AppCompatActivity() {
 
         val ourList = listOf<ProductItem>(ProductItem("serega", "a"), ProductItem("danya", "b"), ProductItem("maxx", "c"),
             ProductItem("serega", "a"), ProductItem("danya", "b"), ProductItem("maxx", "c"))
-        productsList.adapter = ProductAdapter(this, ourList)
+        productsList.adapter = ProductRAdapter(this, ourList){
+            println("clicked on $it")
+        }
+        productsList.layoutManager = LinearLayoutManager(this)
 
     }
+
+
 }
